@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+
 using Crestron.SimplSharp.CrestronIO;
+
 using XSigUtilityLibrary.Serialization;
+using XSigUtilityLibrary.Tokens;
 
 namespace XSigUtilityLibrary
 {
@@ -99,6 +105,97 @@ namespace XSigUtilityLibrary
 
             var tokens = serializer.Serialize(obj);
             writer.WriteXSigData(tokens, offset);
+        }
+
+        public static readonly int XSigEncoding = 28591;
+
+        /// <summary>
+        /// Return the given XSigToken array as the string representation for Simpl.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this XSigToken token)
+        {
+            if (token == null)
+                return "";
+
+            string returnString;
+            using (var s = new MemoryStream())
+            {
+                using (var tw = new XSigTokenStreamWriter(s, true))
+                {
+                    tw.WriteXSigData(token);
+                }
+
+                var xSig = s.ToArray();
+
+                returnString = Encoding.GetEncoding(XSigEncoding).GetString(xSig, 0, xSig.Length);
+            }
+
+            return returnString;
+        }
+
+        /// <summary>
+        /// Return the given XSigToken array as the string representation for Simpl.
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this XSigToken[] tokens)
+        {
+            if (tokens == null || tokens.Length == 0)
+                return "";
+
+            string returnString;
+            using (var s = new MemoryStream())
+            {
+                using (var tw = new XSigTokenStreamWriter(s, true))
+                {
+                    tw.WriteXSigData(tokens);
+                }
+
+                var xSig = s.ToArray();
+
+                returnString = Encoding.GetEncoding(XSigEncoding).GetString(xSig, 0, xSig.Length);
+            }
+
+            return returnString;
+        }
+
+        /// <summary>
+        /// Return the given XSigToken ICollection as the string representation for Simpl.
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this ICollection<XSigToken> tokens)
+        {
+            if (tokens != null)
+                return tokens.ToArray<XSigToken>().AsXSigString();
+            else
+                return "";
+        }
+
+        /// <summary>
+        /// Return the given XSigToken IEnumerable as the string representation for Simpl.
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this IEnumerable<XSigToken> tokens)
+        {
+            if (tokens != null)
+                return tokens.ToArray<XSigToken>().AsXSigString();
+            else
+                return "";
+
+        }
+
+        /// <summary>
+        /// Return the given byte array representation of an XSigToken as the string representation.
+        /// </summary>
+        /// <param name="xSigByteValue"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this byte[] xSigByteValues)
+        {
+            return Encoding.GetEncoding(XSigEncoding).GetString(xSigByteValues, 0, xSigByteValues.Length);
         }
     }
 }
