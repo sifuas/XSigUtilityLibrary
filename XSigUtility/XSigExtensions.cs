@@ -197,5 +197,38 @@ namespace XSigUtilityLibrary
         {
             return Encoding.GetEncoding(XSigEncoding).GetString(xSigByteValues, 0, xSigByteValues.Length);
         }
+
+        /// <summary>
+        /// Return the given string as the XSig representation of a serial signal for Simpl.
+        /// </summary>
+        /// <param name="?"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this string value, int index)
+        {
+            return new XSigSerialToken(index, value).AsXSigString();
+        }
+
+        /// <summary>
+        /// Return the given ushort as the XSig representation of an analog signal for Simpl
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this ushort value, int index)
+        {
+            return new XSigAnalogToken(index, value).AsXSigString();
+        }
+
+        /// <summary>
+        /// Return the given bool as the XSig representation of a digital signal for Simpl.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static string AsXSigString(this bool value, int index)
+        {
+            return new XSigDigitalToken(index, value).AsXSigString();
+        }
     }
 }
